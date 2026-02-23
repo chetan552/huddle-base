@@ -885,6 +885,12 @@ button {
   gap: var(--space-6);
 }
 
+.grid-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
 .flex {
   display: flex;
 }
@@ -956,6 +962,35 @@ button {
 
   .grid-cards {
     grid-template-columns: 1fr;
+  }
+
+  .grid-calendar {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-3) !important;
+  }
+
+  .calendar-day-cell {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: var(--space-4) !important;
+    min-height: auto !important;
+    padding: var(--space-4) !important;
+  }
+
+  .calendar-day-header {
+    min-width: 40px;
+    font-size: 1.1rem !important;
+    margin-bottom: 0 !important;
+    padding-top: 2px;
+  }
+
+  .calendar-day-events {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
   }
 
   .hide-mobile {
