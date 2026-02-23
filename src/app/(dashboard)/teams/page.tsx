@@ -75,6 +75,30 @@ export default function TeamsPage() {
         setLoading(false);
     };
 
+    const handleDeleteTeam = async (e: React.MouseEvent, id: string, name: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!window.confirm(`Are you sure you want to completely delete "${name}"? This action cannot be undone and will remove all members, events, and history.`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/teams/${id}`, {
+                method: 'DELETE',
+            });
+            const data = await res.json();
+            if (data.success) {
+                fetchTeams();
+            } else {
+                alert(data.error || 'Failed to delete team.');
+            }
+        } catch (err) {
+            console.error('Failed to delete team:', err);
+            alert('A network error occurred while deleting the team.');
+        }
+    };
+
     return (
         <div className="page-content">
             <div className="page-header">
@@ -111,7 +135,17 @@ export default function TeamsPage() {
             ) : (
                 <div className="grid-cards">
                     {teams.map((team) => (
-                        <Link href={`/roster?team=${encodeURIComponent(team.name)}`} key={team.id} className="card card-interactive" style={{ display: 'block', cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}>
+                        <Link href={`/roster?team=${encodeURIComponent(team.name)}`} key={team.id} className="card card-interactive" style={{ display: 'block', cursor: 'pointer', textDecoration: 'none', color: 'inherit', position: 'relative' }}>
+                            {isStaff && (
+                                <button
+                                    className="btn btn-ghost btn-icon"
+                                    style={{ position: 'absolute', top: '1rem', right: '1rem', color: 'var(--danger-400)', zIndex: 10 }}
+                                    title="Delete Team"
+                                    onClick={(e) => handleDeleteTeam(e, team.id, team.name)}
+                                >
+                                    🗑️
+                                </button>
+                            )}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                                 <div style={{
                                     width: 48, height: 48, borderRadius: '0.75rem',
