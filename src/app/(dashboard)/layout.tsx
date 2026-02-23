@@ -16,7 +16,7 @@ interface Notification {
   createdAt: string;
 }
 
-function Sidebar() {
+function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileMenuOpen: boolean; setMobileMenuOpen: (v: boolean) => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -42,6 +42,11 @@ function Sidebar() {
     const interval = setInterval(fetchNotifications, 15000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname, setMobileMenuOpen]);
 
   // Close panel when clicking outside
   useEffect(() => {
@@ -101,155 +106,170 @@ function Sidebar() {
   };
 
   return (
-    <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
-      {/* Logo */}
-      <div className="sidebar__header">
-        <Link href="/dashboard" className="sidebar__logo">
-          <span className="sidebar__logo-icon">⚡</span>
-          {!collapsed && <span className="sidebar__logo-text">HuddleBase</span>}
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          {/* Notification Bell */}
-          <div ref={panelRef} style={{ position: 'relative' }}>
-            <button
-              className="sidebar__toggle"
-              onClick={() => setShowNotifications(!showNotifications)}
-              title="Notifications"
-              style={{ position: 'relative' }}
-            >
-              🔔
-              {unreadCount > 0 && (
-                <span style={{
-                  position: 'absolute', top: -4, right: -4,
-                  background: '#ef4444', color: 'white', fontSize: '0.6rem',
-                  fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  padding: '0 3px',
-                }}>{unreadCount > 9 ? '9+' : unreadCount}</span>
-              )}
-            </button>
-
-            {/* Notification Panel */}
-            {showNotifications && (
-              <div className="notif-panel">
-                <div className="notif-panel__header">
-                  <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Notifications</span>
-                  {unreadCount > 0 && (
-                    <button className="notif-panel__mark-read" onClick={markAllRead}>
-                      Mark all read
-                    </button>
-                  )}
-                </div>
-                <div className="notif-panel__list">
-                  {notifications.length === 0 ? (
-                    <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '0.85rem' }}>
-                      No notifications yet
-                    </div>
-                  ) : (
-                    notifications.slice(0, 20).map((n) => (
-                      <div
-                        key={n.id}
-                        className={`notif-item ${!n.read ? 'notif-item--unread' : ''}`}
-                        onClick={async () => {
-                          if (!n.read) {
-                            try {
-                              await fetch('/api/notifications', {
-                                method: 'PATCH',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ ids: [n.id] }),
-                              });
-                              setNotifications((prev) => prev.map((notif) => notif.id === n.id ? { ...notif, read: true } : notif));
-                              setUnreadCount((c) => Math.max(0, c - 1));
-                            } catch { /* silent */ }
-                          }
-                          if (n.link) router.push(n.link);
-                          setShowNotifications(false);
-                        }}
-                      >
-                        <span className="notif-item__icon">{notifIcon(n.type)}</span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div className="notif-item__title">{n.title}</div>
-                          <div className="notif-item__body">{n.body}</div>
-                          <div className="notif-item__time">{timeAgo(n.createdAt)}</div>
-                        </div>
-                        {!n.read && <span className="notif-item__dot" />}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          <button
-            className="sidebar__toggle"
-            onClick={() => setCollapsed(!collapsed)}
-            title={collapsed ? 'Expand' : 'Collapse'}
-          >
-            {collapsed ? '→' : '←'}
-          </button>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="sidebar__nav">
-        {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-              title={collapsed ? item.label : undefined}
-            >
-              <span className="sidebar__link-icon" style={{ marginRight: '0.5rem' }}>{item.icon}</span>
-              {!collapsed && (
-                <span className="sidebar__link-label">
-                  {item.label === 'Teams' && (user?.role === 'PARENT' || user?.role === 'PLAYER') ? 'My Teams' : item.label}
-                </span>
-              )}
-              {isActive && <span className="sidebar__link-indicator" />}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* User Section */}
-      {user && (
-        <div className="sidebar__footer">
-          <div className="sidebar__user">
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="sidebar__avatar"
-                style={{ objectFit: 'cover' }}
-              />
-            ) : (
-              <div
-                className="sidebar__avatar"
-                style={{ background: getAvatarColor(user.name) }}
-              >
-                {getInitials(user.name)}
-              </div>
-            )}
-            {!collapsed && (
-              <div className="sidebar__user-info">
-                <div className="sidebar__user-name">{user.name}</div>
-                <div className="sidebar__user-role">{user.role}</div>
-              </div>
-            )}
-          </div>
-          <button
-            className="sidebar__logout"
-            onClick={handleLogout}
-            title="Log out"
-          >
-            {collapsed ? '🚪' : 'Log out'}
-          </button>
-        </div>
+    <>
+      {/* Mobile Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="sidebar-overlay hide-desktop"
+          onClick={() => setMobileMenuOpen(false)}
+        />
       )}
+      <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''} ${mobileMenuOpen ? 'sidebar--mobile-open' : ''}`}>
+        {/* Logo */}
+        <div className="sidebar__header">
+          <Link href="/dashboard" className="sidebar__logo">
+            <span className="sidebar__logo-icon">⚡</span>
+            {!collapsed && <span className="sidebar__logo-text">HuddleBase</span>}
+          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            {/* Notification Bell */}
+            <div ref={panelRef} style={{ position: 'relative' }}>
+              <button
+                className="sidebar__toggle"
+                onClick={() => setShowNotifications(!showNotifications)}
+                title="Notifications"
+                style={{ position: 'relative' }}
+              >
+                🔔
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: 'absolute', top: -4, right: -4,
+                    background: '#ef4444', color: 'white', fontSize: '0.6rem',
+                    fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '0 3px',
+                  }}>{unreadCount > 9 ? '9+' : unreadCount}</span>
+                )}
+              </button>
 
-      <style jsx>{`
+              {/* Notification Panel */}
+              {showNotifications && (
+                <div className="notif-panel">
+                  <div className="notif-panel__header">
+                    <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Notifications</span>
+                    {unreadCount > 0 && (
+                      <button className="notif-panel__mark-read" onClick={markAllRead}>
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <div className="notif-panel__list">
+                    {notifications.length === 0 ? (
+                      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '0.85rem' }}>
+                        No notifications yet
+                      </div>
+                    ) : (
+                      notifications.slice(0, 20).map((n) => (
+                        <div
+                          key={n.id}
+                          className={`notif-item ${!n.read ? 'notif-item--unread' : ''}`}
+                          onClick={async () => {
+                            if (!n.read) {
+                              try {
+                                await fetch('/api/notifications', {
+                                  method: 'PATCH',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ ids: [n.id] }),
+                                });
+                                setNotifications((prev) => prev.map((notif) => notif.id === n.id ? { ...notif, read: true } : notif));
+                                setUnreadCount((c) => Math.max(0, c - 1));
+                              } catch { /* silent */ }
+                            }
+                            if (n.link) router.push(n.link);
+                            setShowNotifications(false);
+                          }}
+                        >
+                          <span className="notif-item__icon">{notifIcon(n.type)}</span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div className="notif-item__title">{n.title}</div>
+                            <div className="notif-item__body">{n.body}</div>
+                            <div className="notif-item__time">{timeAgo(n.createdAt)}</div>
+                          </div>
+                          {!n.read && <span className="notif-item__dot" />}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            <button
+              className="sidebar__toggle hide-mobile"
+              onClick={() => setCollapsed(!collapsed)}
+              title={collapsed ? 'Expand' : 'Collapse'}
+            >
+              {collapsed ? '→' : '←'}
+            </button>
+            <button
+              className="sidebar__toggle hide-desktop"
+              onClick={() => setMobileMenuOpen(false)}
+              title="Close"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="sidebar__nav">
+          {NAV_ITEMS.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
+                title={collapsed ? item.label : undefined}
+              >
+                <span className="sidebar__link-icon" style={{ marginRight: '0.5rem' }}>{item.icon}</span>
+                {!collapsed && (
+                  <span className="sidebar__link-label">
+                    {item.label === 'Teams' && (user?.role === 'PARENT' || user?.role === 'PLAYER') ? 'My Teams' : item.label}
+                  </span>
+                )}
+                {isActive && <span className="sidebar__link-indicator" />}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* User Section */}
+        {user && (
+          <div className="sidebar__footer">
+            <div className="sidebar__user">
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="sidebar__avatar"
+                  style={{ objectFit: 'cover' }}
+                />
+              ) : (
+                <div
+                  className="sidebar__avatar"
+                  style={{ background: getAvatarColor(user.name) }}
+                >
+                  {getInitials(user.name)}
+                </div>
+              )}
+              {!collapsed && (
+                <div className="sidebar__user-info">
+                  <div className="sidebar__user-name">{user.name}</div>
+                  <div className="sidebar__user-role">{user.role}</div>
+                </div>
+              )}
+            </div>
+            <button
+              className="sidebar__logout"
+              onClick={handleLogout}
+              title="Log out"
+            >
+              {collapsed ? '🚪' : 'Log out'}
+            </button>
+          </div>
+        )}
+
+        <style jsx>{`
         .sidebar {
           position: fixed;
           left: 0;
@@ -261,10 +281,18 @@ function Sidebar() {
           display: flex;
           flex-direction: column;
           z-index: 50;
-          transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .sidebar--collapsed {
           width: var(--sidebar-collapsed-width);
+        }
+        .sidebar-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(2px);
+          z-index: 40;
+          animation: fadeIn 0.2s ease;
         }
         .sidebar__header {
           display: flex;
@@ -490,15 +518,36 @@ function Sidebar() {
           flex-shrink: 0;
           margin-top: 6px;
         }
+
+        .hide-desktop {
+          display: none !important;
+        }
+
+        @media (max-width: 768px) {
+          .sidebar {
+            transform: translateX(-100%);
+            width: 280px !important;
+          }
+          .sidebar--mobile-open {
+            transform: translateX(0);
+          }
+          .hide-mobile {
+            display: none !important;
+          }
+          .hide-desktop {
+            display: flex !important;
+          }
+        }
       `}</style>
-    </aside>
+      </aside>
+    </>
   );
 }
 
 function DashboardContent({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -527,15 +576,29 @@ function DashboardContent({ children }: { children: ReactNode }) {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      <Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       <main className="dashboard-main">
-        {children}
+        {/* Mobile Header */}
+        <div className="mobile-header hide-desktop">
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(true)}>
+            ☰
+          </button>
+          <div className="mobile-header-title">
+            <span style={{ fontSize: '1.2rem' }}>⚡</span>
+            HuddleBase
+          </div>
+          <div style={{ width: 40 }} /> {/* spacer for flex alignment */}
+        </div>
+        <div className="dashboard-content-inner">
+          {children}
+        </div>
       </main>
 
       <style jsx>{`
         .dashboard-layout {
           display: flex;
           min-height: 100vh;
+          width: 100%;
         }
         .dashboard-main {
           flex: 1;
@@ -543,6 +606,63 @@ function DashboardContent({ children }: { children: ReactNode }) {
           transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           min-height: 100vh;
           background: var(--surface-900);
+          display: flex;
+          flex-direction: column;
+          max-width: 100%;
+        }
+        .dashboard-content-inner {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          max-width: 100vw;
+        }
+        .mobile-header {
+          display: none;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem;
+          background: var(--surface-800);
+          border-bottom: 1px solid var(--surface-700);
+          position: sticky;
+          top: 0;
+          z-index: 30;
+        }
+        .mobile-menu-btn {
+          width: 40px;
+          height: 40px;
+          background: var(--surface-700);
+          border: none;
+          border-radius: 8px;
+          color: var(--text-primary);
+          font-size: 1.25rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+        .mobile-header-title {
+          font-weight: 800;
+          font-size: 1.1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: linear-gradient(135deg, #3b82f6, #14b8a6);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        
+        .hide-desktop {
+          display: none !important;
+        }
+
+        @media (max-width: 768px) {
+          .dashboard-main {
+            margin-left: 0;
+          }
+          .mobile-header.hide-desktop {
+            display: flex !important;
+          }
         }
       `}</style>
     </div>
