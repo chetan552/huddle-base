@@ -185,7 +185,7 @@ function AdminDashboard({ user }: { user: any }) {
             )}
 
             {/* Two Column Layout */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="grid-cards">
                 {/* Upcoming Events */}
                 <div className="card">
                     <div className="card-header">

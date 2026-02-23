@@ -121,7 +121,7 @@ export default function PlayerDashboard({ user }: { user: any }) {
                 )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
+            <div className="grid-cards" style={{ marginTop: '1.5rem' }}>
                 <div className="card">
                     <div className="card-header">
                         <h2 className="card-title">Coach Announcements</h2>
