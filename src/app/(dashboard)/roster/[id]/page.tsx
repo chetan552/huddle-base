@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
-export default function PlayerProfilePage({ params }: { params: { id: string } }) {
+export default function PlayerProfilePage() {
     const { user } = useAuth();
     const router = useRouter();
-    const playerId = params.id;
+    const params = useParams();
+    const playerId = params.id as string;
     const isCoach = user?.role === 'COACH' || user?.role === 'ADMIN';
 
     // State placeholders for MVP
