@@ -61,8 +61,8 @@ export async function POST(
         });
 
         return NextResponse.json({ success: true, data: { ...stat, metrics: JSON.parse(stat.metrics) } }, { status: 201 });
-    } catch (error) {
-        console.error('Create player stat error:', error);
-        return NextResponse.json({ success: false, error: 'Failed to record stat' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Create player stats error:', error);
+        return NextResponse.json({ success: false, error: 'Failed to record stats', details: String(error?.message || error) }, { status: 500 });
     }
 }

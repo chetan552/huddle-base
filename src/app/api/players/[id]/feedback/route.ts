@@ -55,8 +55,8 @@ export async function POST(
         });
 
         return NextResponse.json({ success: true, data: feedback }, { status: 201 });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Create player feedback error:', error);
-        return NextResponse.json({ success: false, error: 'Failed to record feedback' }, { status: 500 });
+        return NextResponse.json({ success: false, error: 'Failed to record feedback', details: String(error?.message || error) }, { status: 500 });
     }
 }

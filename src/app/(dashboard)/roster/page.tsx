@@ -7,6 +7,7 @@ import { getAvatarColor, getInitials } from '@/lib/utils';
 
 interface Player {
     id: string;
+    userId: string;
     name: string;
     email: string;
     role: string;
@@ -168,7 +169,7 @@ export default function RosterPage() {
                                                 {getInitials(player.name)}
                                             </div>
                                             <div>
-                                                <Link href={`/roster/${player.id}`} style={{ color: 'var(--primary-400)', textDecoration: 'none', fontWeight: 600 }} className="hover-underline">
+                                                <Link href={`/roster/${player.userId}`} style={{ color: 'var(--primary-400)', textDecoration: 'none', fontWeight: 600 }} className="hover-underline">
                                                     {player.name}
                                                 </Link>
                                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>{player.email}</div>
