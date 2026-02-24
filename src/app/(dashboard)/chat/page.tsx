@@ -26,6 +26,7 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showMobileSidebar, setShowMobileSidebar] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const fetchTeams = async () => {
@@ -77,9 +78,9 @@ export default function ChatPage() {
     const activeTeamData = teams.find((t) => t.id === activeTeam);
 
     return (
-        <div style={{ display: 'flex', height: 'calc(100vh)', overflow: 'hidden' }}>
+        <div className="chat-container">
             {/* Channel list */}
-            <div style={{
+            <div className="chat-sidebar" style={{
                 width: '260px', background: 'var(--surface-800)', borderRight: '1px solid var(--surface-700)',
                 display: 'flex', flexDirection: 'column', flexShrink: 0,
             }}>
@@ -93,7 +94,10 @@ export default function ChatPage() {
                     {teams.map((team) => (
                         <button
                             key={team.id}
-                            onClick={() => setActiveTeam(team.id)}
+                            onClick={() => {
+                                setActiveTeam(team.id);
+                                setShowMobileSidebar(false);
+                            }}
                             style={{
                                 width: '100%', padding: '0.75rem', display: 'flex', alignItems: 'center',
                                 gap: '0.75rem', border: 'none', borderRadius: '0.625rem', cursor: 'pointer',
@@ -120,13 +124,28 @@ export default function ChatPage() {
             </div>
 
             {/* Chat area */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div className="chat-main" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 {/* Chat header */}
                 <div style={{
                     padding: '1rem 1.5rem', borderBottom: '1px solid var(--surface-700)',
                     display: 'flex', alignItems: 'center', gap: '0.75rem',
                     background: 'var(--surface-800)',
                 }}>
+                    <button
+                        className="mobile-back-btn"
+                        onClick={() => setShowMobileSidebar(true)}
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--text-secondary)',
+                            fontSize: '1.2rem',
+                            cursor: 'pointer',
+                            display: 'none',
+                            padding: '0 0.5rem 0 0',
+                        }}
+                    >
+                        ←
+                    </button>
                     {activeTeamData && (
                         <>
                             <div style={{
@@ -222,6 +241,29 @@ export default function ChatPage() {
                     </form>
                 )}
             </div>
+
+            <style jsx>{`
+                .chat-container {
+                    display: flex;
+                    height: 100vh;
+                    overflow: hidden;
+                    width: 100%;
+                }
+                
+                @media (max-width: 768px) {
+                    .chat-sidebar {
+                        width: 100% !important;
+                        display: ${showMobileSidebar ? 'flex' : 'none'} !important;
+                    }
+                    .chat-main {
+                        width: 100% !important;
+                        display: ${!showMobileSidebar ? 'flex' : 'none'} !important;
+                    }
+                    .mobile-back-btn {
+                        display: block !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }

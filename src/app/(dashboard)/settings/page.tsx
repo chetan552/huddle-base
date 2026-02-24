@@ -99,7 +99,7 @@ export default function SettingsPage() {
             {/* Profile Section */}
             <div className="card" style={{ marginBottom: '1.5rem' }}>
                 <h2 className="card-title" style={{ marginBottom: '1.5rem' }}>Profile</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem' }}>
                     <div
                         style={{ position: 'relative', cursor: 'pointer' }}
                         onClick={() => fileInputRef.current?.click()}
@@ -146,7 +146,7 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', maxWidth: '600px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', maxWidth: '600px' }}>
                     <div className="form-group">
                         <label className="form-label">Full Name</label>
                         <input className="form-input" value={user.name} readOnly />
