@@ -78,9 +78,9 @@ export default function ChatPage() {
     const activeTeamData = teams.find((t) => t.id === activeTeam);
 
     return (
-        <div className="chat-container">
+        <div className="chat-container" style={{ display: 'flex', height: '100vh', overflow: 'hidden', width: '100%' }}>
             {/* Channel list */}
-            <div className="chat-sidebar" style={{
+            <div className={`chat-sidebar ${showMobileSidebar ? 'chat-sidebar-mobile-visible' : 'chat-sidebar-mobile-hidden'}`} style={{
                 width: '260px', background: 'var(--surface-800)', borderRight: '1px solid var(--surface-700)',
                 display: 'flex', flexDirection: 'column', flexShrink: 0,
             }}>
@@ -124,7 +124,7 @@ export default function ChatPage() {
             </div>
 
             {/* Chat area */}
-            <div className="chat-main" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div className={`chat-main ${!showMobileSidebar ? 'chat-main-mobile-visible' : 'chat-main-mobile-hidden'}`} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 {/* Chat header */}
                 <div style={{
                     padding: '1rem 1.5rem', borderBottom: '1px solid var(--surface-700)',
@@ -241,29 +241,6 @@ export default function ChatPage() {
                     </form>
                 )}
             </div>
-
-            <style jsx>{`
-                .chat-container {
-                    display: flex;
-                    height: 100vh;
-                    overflow: hidden;
-                    width: 100%;
-                }
-                
-                @media (max-width: 768px) {
-                    .chat-sidebar {
-                        width: 100% !important;
-                        display: ${showMobileSidebar ? 'flex' : 'none'} !important;
-                    }
-                    .chat-main {
-                        width: 100% !important;
-                        display: ${!showMobileSidebar ? 'flex' : 'none'} !important;
-                    }
-                    .mobile-back-btn {
-                        display: block !important;
-                    }
-                }
-            `}</style>
         </div>
     );
 }

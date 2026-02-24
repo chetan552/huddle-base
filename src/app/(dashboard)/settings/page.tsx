@@ -146,16 +146,16 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', maxWidth: '600px' }}>
-                    <div className="form-group">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', maxWidth: '600px' }}>
+                    <div className="form-group" style={{ flex: '1 1 250px' }}>
                         <label className="form-label">Full Name</label>
                         <input className="form-input" value={user.name} readOnly />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" style={{ flex: '1 1 250px' }}>
                         <label className="form-label">Email</label>
                         <input className="form-input" value={user.email} readOnly />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" style={{ flex: '1 1 100%' }}>
                         <label className="form-label">Role</label>
                         <input className="form-input" value={user.role} readOnly />
                     </div>

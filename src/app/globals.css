@@ -1121,3 +1121,34 @@ button {
   border: 1px solid rgba(59, 130, 246, 0.3);
   color: var(--info-400);
 }
+
+/* Chat Mobile Responsiveness */
+@media (max-width: 768px) {
+  .chat-sidebar-mobile-hidden {
+    display: none !important;
+  }
+
+  .chat-sidebar-mobile-visible {
+    width: 100% !important;
+    display: flex !important;
+  }
+
+  .chat-main-mobile-hidden {
+    display: none !important;
+  }
+
+  .chat-main-mobile-visible {
+    width: 100% !important;
+    display: flex !important;
+  }
+
+  .mobile-back-btn {
+    display: block !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-back-btn {
+    display: none !important;
+  }
+}
