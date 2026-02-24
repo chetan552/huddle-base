@@ -147,11 +147,11 @@ function AdminDashboard({ user }: { user: any }) {
                     <p className="page-subtitle">Here&apos;s what&apos;s happening across your teams.</p>
                 </div>
                 {isStaff && (
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                        <Link href="/teams" className="btn btn-outline">
+                    <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', width: '100%' }}>
+                        <Link href="/teams" className="btn btn-outline" style={{ flex: '1 1 auto', justifyContent: 'center' }}>
                             + New Team
                         </Link>
-                        <Link href="/schedule" className="btn btn-primary">
+                        <Link href="/schedule" className="btn btn-primary" style={{ flex: '1 1 auto', justifyContent: 'center' }}>
                             + New Event
                         </Link>
                     </div>

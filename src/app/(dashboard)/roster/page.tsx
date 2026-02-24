@@ -116,16 +116,16 @@ export default function RosterPage() {
                     <h1 className="page-title">Roster</h1>
                     <p className="page-subtitle">{players.length} members across all teams</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', width: '100%', maxWidth: '400px' }}>
                     <input
                         className="form-input"
                         placeholder="🔍 Search players..."
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        style={{ width: '220px' }}
+                        style={{ flex: '1 1 auto', minWidth: '150px' }}
                     />
                     {isStaff && (
-                        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                        <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', justifyContent: 'center' }}>
                             + Add Player
                         </button>
                     )}

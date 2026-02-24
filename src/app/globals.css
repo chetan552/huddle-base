@@ -558,6 +558,9 @@ button {
   overflow-x: auto;
   border-radius: var(--radius-xl);
   border: 1px solid var(--surface-700);
+  -webkit-overflow-scrolling: touch;
+  /* silky smooth touch scrolling */
+  max-width: 100vw;
 }
 
 .table {
@@ -954,6 +957,8 @@ button {
 
   .page-header {
     margin-bottom: var(--space-6);
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .grid-stats {
@@ -993,12 +998,19 @@ button {
     min-width: 0;
   }
 
+  .tabs {
+    white-space: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+  }
+
   .hide-mobile {
     display: none !important;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .grid-stats {
     grid-template-columns: 1fr;
   }

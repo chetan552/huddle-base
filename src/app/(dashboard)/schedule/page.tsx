@@ -188,37 +188,31 @@ export default function SchedulePage() {
 
     return (
         <div className="page-content">
-            <div className="page-header">
-                <div>
+            <div className="page-header" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: '1 1 auto' }}>
                     <h1 className="page-title">Schedule</h1>
-                    <p className="page-subtitle">Manage practices, games, and meetings</p>
+                    <p className="page-subtitle">Manage practices, games, and events</p>
                 </div>
-                {isStaff && (
-                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                        + New Event
-                    </button>
-                )}
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--surface-800)', padding: '0.25rem', borderRadius: '0.5rem' }}>
+                        <button className="btn btn-ghost" style={{ padding: '0.5rem 1rem' }} onClick={() => setCurrentDate(new Date(year, month - 1, 1))}>←</button>
+                        <span style={{ fontWeight: 600, minWidth: '140px', textAlign: 'center' }}>
+                            {MONTHS[month]} {year}
+                        </span>
+                        <button className="btn btn-ghost" style={{ padding: '0.5rem 1rem' }} onClick={() => setCurrentDate(new Date(year, month + 1, 1))}>→</button>
+                    </div>
+
+                    {isStaff && (
+                        <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ whiteSpace: 'nowrap' }}>
+                            + New Event
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Calendar Header */}
             <div className="card" style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                    <button
-                        className="btn btn-ghost btn-icon"
-                        onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
-                    >
-                        ←
-                    </button>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-                        {MONTHS[month]} {year}
-                    </h2>
-                    <button
-                        className="btn btn-ghost btn-icon"
-                        onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
-                    >
-                        →
-                    </button>
-                </div>
 
                 {/* Day Headers */}
                 <div className="grid-calendar hide-mobile">

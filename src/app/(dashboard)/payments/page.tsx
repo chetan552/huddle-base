@@ -164,13 +164,13 @@ export default function PaymentsPage() {
 
     return (
         <div className="page-content">
-            <div className="page-header">
-                <div>
+            <div className="page-header" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ flex: '1 1 auto' }}>
                     <h1 className="page-title">Payments</h1>
                     <p className="page-subtitle">Manage team dues and invoices</p>
                 </div>
                 {isStaff && (
-                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                    <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ whiteSpace: 'nowrap' }}>
                         + Create Invoice
                     </button>
                 )}
